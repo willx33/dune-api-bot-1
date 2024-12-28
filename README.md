@@ -8,5 +8,8 @@ create venv:
 python -m venv venv
 source venv/bin/activate
 
-dependencies
+dependencies:
 pip install -r requirements.txt
+
+run:
+python dune_api_bot.py
