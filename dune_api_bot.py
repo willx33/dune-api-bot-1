@@ -1,49 +1,35 @@
 import os
 import dotenv
+import pandas as pd
 from dune_client.client import DuneClient
 
 def main():
-    # Load .env and get the API key
+    # Load .env and get API key
     dotenv.load_dotenv()
-    dune_api_key = os.getenv("DUNE_API_KEY")
-    
-    if not dune_api_key:
+    api_key = os.getenv("DUNE_API_KEY")
+    if not api_key:
         print("Error: DUNE_API_KEY not found in .env file.")
         return
 
-    dune = DuneClient(api_key=dune_api_key)
+    dune = DuneClient(api_key=api_key)
 
-    # Get user inputs
-    query_id_input = input("Enter the Dune query ID: ").strip()
+    # Prompt user for a query ID
+    query_id_input = input("Enter the Dune query ID (numbers only): ").strip()
     if not query_id_input.isdigit():
         print("Invalid query ID. Must be a number.")
         return
-    
     query_id = int(query_id_input)
 
-    output_choice = input("Do you want CSV or JSON output? (csv/json): ").strip().lower()
-    if output_choice not in ["csv", "json"]:
-        print("Invalid choice. Please enter 'csv' or 'json'.")
-        return
-
+    print("Fetching data as CSV...")
     try:
-        if output_choice == "json":
-            # Pull the result in JSON
-            query_result = dune.get_latest_result(query_id)
-            print("\n--- JSON Output ---")
-            print(query_result)  # or format it further if you like
-
-        else:
-            # Pull the result as a Pandas DataFrame
-            df = dune.get_latest_result_dataframe(query_id)
-            print("\n--- CSV Output ---")
-            csv_data = df.to_csv(index=False)
-            print(csv_data)
-
-            # Optionally, write CSV to a file:
-            # with open("output.csv", "w") as f:
-            #     f.write(csv_data)
-            #     print("CSV file written: output.csv")
+        # Fetch data as a Pandas DataFrame
+        df = dune.get_latest_result_dataframe(query_id)
+        
+        # Save to CSV
+        csv_filename = "dune_output.csv"
+        df.to_csv(csv_filename, index=False)
+        
+        print(f"Success! CSV saved to {csv_filename}")
 
     except Exception as e:
         print(f"Error fetching query results: {e}")
