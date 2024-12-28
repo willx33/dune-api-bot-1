@@ -98,8 +98,10 @@ def option_dune_csv_parser():
             addresses = []
             for _, row in df.iterrows():
                 if len(row) > 2:
-                    addr = str(row[2]).strip()
-                    addresses.append(addr + ",")
+                    val = str(row[2]).strip()
+                    if val.lower() == "token_address":
+                        continue
+                    addresses.append(val + ",")
 
             base_name = os.path.splitext(os.path.basename(chosen_file))[0]
             out_filename = os.path.join(parsed_dir, f"{base_name}_parsed{chosen_ext}")
